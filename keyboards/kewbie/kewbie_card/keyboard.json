@@ -1,0 +1,63 @@
+{
+    "manufacturer": "KAWABATA, Kazumichi",
+    "keyboard_name": "Kewbie-Card",
+    "maintainer": "higemaru",
+    "processor": "RP2040",
+    "bootloader": "rp2040",
+    "usb": {
+        "vid": "0x6B65",
+        "pid": "0x0005",
+        "device_version": "1.0.0"
+    },
+    "features": {
+        "bootmagic": true,
+        "command": false,
+        "console": false,
+        "extrakey": true,
+        "mousekey": true,
+        "nkro": true,
+        "rgblight": true,
+        "encoder": true
+    },
+//    "diode_direction": "COL2ROW",
+    "matrix_pins": {
+        "direct": [
+            ["GP2","GP3","GP4","GP5","GP6","GP9"]
+//            ["GP3","GP4","GP5","GP6"]
+        ]
+    },
+    "encoder": {
+        "rotary": [
+            { "pin_a": "GP0", "pin_b": "GP1", "resolution": 2 },
+            { "pin_a": "GP7", "pin_b": "GP8", "resolution": 2 }
+        ]
+    },
+    "rgblight": {
+        "led_count": 1,
+        "pin": "GP16",
+        "animations": {
+            "rainbow_mood": true,
+        },
+        "default": {
+            "animation": "rainbow_mood",
+//            "animation": "static_light",
+            "on": false,
+            "hue": 140,
+            "val": 120
+        },
+        "driver": "ws2812",
+        "sleep": true
+    },
+    "layouts": {
+        "LAYOUT": {
+            "layout": [
+                { "matrix": [0, 0], "x": 0, "y": 0 },
+                { "matrix": [0, 1], "x": 1, "y": 0 },
+                { "matrix": [0, 2], "x": 2, "y": 0 },
+                { "matrix": [0, 3], "x": 3, "y": 0 },
+                { "matrix": [0, 4], "x": 4, "y": 0 },
+                { "matrix": [0, 5], "x": 5, "y": 0 }
+            ]
+        }
+    }
+}
