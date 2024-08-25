@@ -5,10 +5,10 @@
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
         [0] = LAYOUT(
-            KC_ESC,  KC_Q, KC_W, KC_E, KC_R, KC_T,                  KC_Y, KC_U, KC_I,    KC_O,   KC_P,    KC_RSFT,
-            KC_TAB,  KC_A, KC_S, KC_D, KC_F, KC_G,                  KC_H, KC_J, KC_K,    KC_L,   KC_SCLN, KC_GRV,
-            KC_LCTL, KC_Z, KC_X, KC_C, KC_V, KC_B,                  KC_N, KC_M, KC_COMM, KC_DOT, KC_SLSH, KC_QUOT,
-            KC_LSFT, KC_LNG2, KC_LALT, KC_LGUI, LT(1,KC_SPC), LT(2,KC_SPC), KC_ENT,  KC_BSPC,KC_LNG1, KC_MINS
+            KC_ESC,  LGUI_T(KC_Q), KC_W, KC_E, KC_R, KC_T,                  KC_Y, KC_U, KC_I,    KC_O,   KC_P,    KC_RSFT,
+            KC_TAB,  CTL_T(KC_A), KC_S, KC_D, KC_F, KC_G,                  KC_H, KC_J, KC_K,    KC_L,   CTL_T(KC_SCLN), KC_GRV,
+            KC_LCTL, SFT_T(KC_Z), KC_X, KC_C, KC_V, KC_B,                  KC_N, KC_M, KC_COMM, KC_DOT, SFT_T(KC_MINS), KC_QUOT,
+            KC_LSFT, CTL_T(KC_TAB), LALT_T(KC_TAB), LGUI_T(KC_ESC), LT(1,KC_SPC), LT(2,KC_SPC), KC_ENT,  KC_BSPC,SFT_T(KC_ESC), KC_SLSH
         ),
 
         [1] = LAYOUT(
