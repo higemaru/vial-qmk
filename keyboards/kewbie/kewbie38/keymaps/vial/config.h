@@ -10,6 +10,11 @@
 /* #define VIAL_UNLOCK_COMBO_COLS { 0, 11 } */
 
 #define WS2812_DI_PIN GP16
+
+#define I2C1_SDA_PIN GP0
+#define I2C1_SCL_PIN GP1
+#define I2C_DRIVER I2CD0
+
 /* #ifdef WS2812_DI_PIN */
 /* #	define RGBLED_NUM 1 */
 /* #	define RGBLIGHT_LIMIT_VAL 120 */
@@ -18,3 +23,7 @@
 /* #	define RGBLIGHT_SLEEP */
 /* #	define RGBLIGHT_DEFAULT_MODE RGBLIGHT_MODE_RAINBOW_MOOD */
 /* #endif */
+
+#define PIMORONI_TRACKBALL_SCALE 10    // default 5
+#define POINTING_DEVICE_ROTATION_90
+

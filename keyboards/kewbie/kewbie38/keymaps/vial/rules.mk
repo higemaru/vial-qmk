@@ -1,10 +1,10 @@
 VIA_ENABLE = yes
 VIAL_ENABLE = yes
 
-LTO_ENABLE = yes
+# LTO_ENABLE = yes
 
-WS2812_DRIVER = vendor
-RGBLIGHT_ENABLE = yes
+## WS2812_DRIVER = vendor
+# RGBLIGHT_ENABLE = yes
 
 QMK_SETTINGS = yes
 DYNAMIC_TAPPING_TERM_ENABLE = yes
@@ -18,3 +18,4 @@ COMBO_ENABLE = yes
 # NKRO_ENABLE = yes # 6キー以上同時
 # ENCODER_MAP_ENABLE = yes
 # OLED_ENABLE = yes
+
