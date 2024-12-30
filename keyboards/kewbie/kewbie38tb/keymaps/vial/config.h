@@ -26,3 +26,8 @@
 
 #define PIMORONI_TRACKBALL_SCALE 15    // default 5
 #define POINTING_DEVICE_ROTATION_90
+
+#define POINTING_DEVICE_AUTO_MOUSE_ENABLE
+// Time layer remains active after activation
+#define AUTO_MOUSE_TIME 450
+

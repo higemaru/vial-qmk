@@ -1,13 +1,12 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
 #include QMK_KEYBOARD_H
+#include <stdio.h>
 
 // https://zenn.dev/takashicompany/articles/69b87160cda4b9
 /////////////////////////////
 /// miniZoneの実装 ここから ///
 ////////////////////////////
-
-#include <stdio.h>
 
 enum custom_keycodes {
     KC_MY_BTN1 = SAFE_RANGE,
@@ -344,7 +343,6 @@ report_mouse_t pointing_device_task_user(report_mouse_t mouse_report) {
 /// miniZoneの実装 ここまで ///
 ////////////////////////////
 
-
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
         [0] = LAYOUT(
@@ -375,9 +373,31 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 //            KC_NO, KC_BRID, KC_BRIU, RGB_TOG,   KC_TRNS, KC_TRNS,  KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,  KC_F12, KC_NO,
 //            KC_NO, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,  KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_NO
             KC_F1, KC_F2,   KC_F3,   KC_F4,   KC_F5, KC_F6,  KC_F7,   KC_F8,   KC_F9,   KC_F10,
-            KC_VOLD, KC_VOLU, KC_MUTE, KC_MY_BTN2, KC_MY_BTN1,    KC_MS_BTN1, KC_MS_BTN2, KC_TRNS,   KC_TRNS, KC_F11,
+            KC_VOLD, KC_VOLU, KC_MUTE, KC_MS_BTN2, KC_MS_BTN1,    KC_MS_BTN1, KC_MS_BTN2, KC_TRNS,   KC_TRNS, KC_F11,
             KC_BRID, KC_BRIU, RGB_TOG,   KC_TRNS, KC_MY_SCR,  KC_MS_BTN3, KC_SCROLL_DIR_V, KC_SCROLL_DIR_H, KC_TRNS,  KC_F12,
+//            KC_BRID, KC_BRIU, RGB_TOG,   KC_TRNS, KC_MS_BTN3,  KC_MS_BTN3, KC_TRNS, KC_TRNS, KC_TRNS,  KC_F12,
             KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,  KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS
         ),
 
 };
+
+// auto mouse lalyer
+void pointing_device_init_user(void) {
+    set_auto_mouse_layer(3);
+    set_auto_mouse_enable(true);
+}
+
+/*
+// AZ1UBALL acceleration
+void pointing_device_init_kb(void) {
+    uint8_t addr=0x14;
+    //uint8_t data[]={0x90, 0x00};    // AZ1UBALL normal speed mode
+    uint8_t data[]={0x91, 0x00};      // AZ1UBALL accellaration mode
+    uint16_t timeout=100;             // in milli-seconds
+    i2c_status_t status;
+    status  = i2c_transmit (addr, data, 2, timeout);
+    if (status != 0) {
+        return;
+    }
+}
+*/
