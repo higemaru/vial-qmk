@@ -307,5 +307,27 @@
         "3,6"
       ]
     ]
-  }
+  },
+  "customKeycodes": [
+    {
+      "name": "TP_TOGG_INV",
+      "title": "Scroll Invert",
+      "shortName": "SclInv"
+    },
+    {
+      "name": "TP_SPEED_INC",
+      "title": "Scroll Speed +",
+      "shortName": "SclSpd+"
+    },
+    {
+      "name": "TP_SPEED_DEC",
+      "title": "Scroll Speed -",
+      "shortName": "SclSpd-"
+    },
+    {
+      "name": "TP_SPEED_RST",
+      "title": "Scroll Speed Reset",
+      "shortName": "SclRst"
+    }
+  ]
 }

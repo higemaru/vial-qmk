@@ -3,7 +3,7 @@
 #pragma once
 #include "config.h"
 
-#define VIAL_KEYBOARD_UID {0x53, 0xAC, 0x98, 0x1C, 0xCC, 0x52, 0xFC, 0x19}
+#define VIAL_KEYBOARD_UID {0x2B, 0xD7, 0xF9, 0xE9, 0x7A, 0xF9, 0x29, 0xB2}
 
 /* CONSIDER ADDING AN UNLOCK COMBO. SEE DOCUMENTATION. */
 #define VIAL_INSECURE
@@ -21,10 +21,10 @@
 #define F_SCL 100000
 #define AZOTEQ_IQS5XX_TPS43 1
 #define AZOTEQ_IQS5XX_SCROLL_INITIAL_DISTANCE 10 // default 50
-#define AZOTEQ_IQS5XX_ROTATION_180
+/* #define AZOTEQ_IQS5XX_ROTATION_180 */
 /* #define AZOTEQ_IQS5XX_SWIPE_X_ENABLE true */
 
-#define MOUSE_EXTENDED_REPORT
+/* #define MOUSE_EXTENDED_REPORT */ // is_keyboard_master_os_windows を使って、コンパイル時に OS 判別
 
 /* #ifdef WS2812_DI_PIN */
 /* #	define RGBLED_NUM 1 */
