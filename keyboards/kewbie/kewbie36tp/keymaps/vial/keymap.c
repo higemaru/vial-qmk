@@ -16,14 +16,14 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
             KC_EXLM, KC_AT, KC_HASH, KC_DLR, KC_PERC,   KC_CIRC, KC_AMPR, KC_ASTR, KC_LPRN, KC_RPRN,
             KC_1,    KC_2,  KC_3,    KC_4,   KC_5,      KC_6,    KC_7,    KC_8,    KC_9,    KC_0,
             KC_TRNS, KC_EQL, KC_PLUS, KC_MINS, KC_GRV,          KC_QUOT,  KC_PIPE, KC_LBRC, KC_RBRC, KC_SLSH,
-            KC_TRNS, KC_TRNS, KC_TRNS,  MO(3), KC_BSPC, KC_TRNS
+            KC_TRNS, KC_TRNS, KC_TRNS,  MO(3), KC_TRNS, KC_BSPC
         ),
 
         [2] = LAYOUT(
             EE_CLR, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,  KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,  KC_TRNS,
             KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,  KC_LEFT, KC_DOWN, KC_UP,   KC_RIGHT, KC_PIPE,
             KC_TRNS, KC_EQL,  KC_PLUS, KC_UNDS, KC_TILD,  KC_QUOT, KC_PIPE, KC_LCBR, KC_RCBR,  KC_BSLS,
-            KC_TRNS, KC_TRNS, MO(3),  KC_TRNS, KC_BSPC, KC_TRNS
+            KC_TRNS, KC_TRNS, MO(3),  KC_TRNS, KC_TRNS, KC_BSPC
         ),
 
 
@@ -35,7 +35,6 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         ),
 
 };
-
 
 //ref. https://74th.hateblo.jp/entry/testing-TPS43-201A-S
 
@@ -111,8 +110,8 @@ report_mouse_t pointing_device_task_user(report_mouse_t mouse_report) {
     return mouse_report;
 }
 
-
 /*
+
 #define SCROLL_SCALE_PERCENT 3
 
 int32_t scroll_amount_h = 0;
