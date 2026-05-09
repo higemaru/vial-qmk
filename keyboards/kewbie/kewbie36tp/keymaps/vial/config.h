@@ -20,7 +20,7 @@
 /* https://docs.qmk.fm/features/pointing_device */
 #define F_SCL 100000
 #define AZOTEQ_IQS5XX_TPS43 1
-#define AZOTEQ_IQS5XX_SCROLL_INITIAL_DISTANCE 10 // default 50
+#define AZOTEQ_IQS5XX_SCROLL_INITIAL_DISTANCE 30 // default 50
 /* #define AZOTEQ_IQS5XX_ROTATION_180 */
 /* #define AZOTEQ_IQS5XX_SWIPE_X_ENABLE true */
 

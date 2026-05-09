@@ -328,6 +328,11 @@
       "name": "TP_SPEED_RST",
       "title": "Scroll Speed Reset",
       "shortName": "SclRst"
+    },
+    {
+      "name": "TP_TOGG_EN",
+      "title": "Touch Pad ON/OFF",
+      "shortName": "TpTgl"
     }
   ]
 }
