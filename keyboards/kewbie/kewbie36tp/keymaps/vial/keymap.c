@@ -29,7 +29,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
         [3] = LAYOUT(
             KC_F1, KC_F2,   KC_F3,   KC_F4,   KC_F5, KC_F6,  KC_F7,   KC_F8,   KC_F9,   KC_F10,
-            KC_VOLD, KC_VOLU, KC_MUTE, KC_TRNS, KC_TRNS,    TP_TOGG_EN, KC_TRNS, KC_TRNS,   KC_TRNS, KC_F11,
+            KC_VOLD, KC_VOLU, KC_MUTE, KC_TRNS, KC_TRNS,    TP_TOGG_EN, KC_BTN1, KC_BTN2, TP_DRAG_LOCK , KC_F11,
             KC_BRID, KC_BRIU, RGB_TOG,   KC_TRNS, KC_TRNS,  TP_TOGG_INV, TP_SPEED_DEC, TP_SPEED_RST, TP_SPEED_INC,  KC_F12,
             KC_TRNS, KC_TRNS, KC_TRNS,  KC_TRNS, KC_TRNS, KC_TRNS
         ),
@@ -107,6 +107,16 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             case TP_SPEED_RST: {
                 g_tp_speed = TP_SPEED_DEFAULT;
                 eeprom_update_byte((uint8_t*)(EECONFIG_USER + EEP_TP_SPEED), TP_SPEED_DEFAULT); // デフォルト値に戻す
+                return false;
+            }
+            case TP_DRAG_LOCK: {
+                static bool drag_locked = false;
+                drag_locked = !drag_locked;
+                if (drag_locked) {
+                    register_code(KC_BTN1);
+                } else {
+                    unregister_code(KC_BTN1);
+                }
                 return false;
             }
         }

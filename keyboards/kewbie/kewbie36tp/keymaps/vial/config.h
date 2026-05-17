@@ -21,6 +21,7 @@
 #define F_SCL 100000
 #define AZOTEQ_IQS5XX_TPS43 1
 #define AZOTEQ_IQS5XX_SCROLL_INITIAL_DISTANCE 30 // default 50
+#define AZOTEQ_IQS5XX_TWO_FINGER_TAP_ENABLE false // 2本指タップ（右クリック）無効化
 /* #define AZOTEQ_IQS5XX_ROTATION_180 */
 /* #define AZOTEQ_IQS5XX_SWIPE_X_ENABLE true */
 

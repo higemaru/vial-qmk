@@ -333,6 +333,11 @@
       "name": "TP_TOGG_EN",
       "title": "Touch Pad ON/OFF",
       "shortName": "TpTgl"
+    },
+    {
+      "name": "TP_DRAG_LOCK",
+      "title": "Drag Lock",
+      "shortName": "DrgLk"
     }
   ]
 }
