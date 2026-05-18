@@ -2,7 +2,7 @@
 
 // QMKの既存キーコードと衝突しない安全な範囲から、新しいキーコードを定義します
 enum custom_keycodes {
-    TP_TOGG_INV = SAFE_RANGE, // スクロール方向をトグル（切り替え）
+    TP_TOGG_INV = QK_KB_0, // スクロール方向をトグル（切り替え）
     TP_SPEED_INC,             // スクロール速度を 1 上げる
     TP_SPEED_DEC,             // スクロール速度を 1 下げる
     TP_SPEED_RST,             // スクロール速度をリセット
