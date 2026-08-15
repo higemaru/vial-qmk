@@ -7,7 +7,8 @@ enum custom_keycodes {
     TP_SPEED_DEC,             // スクロール速度を 1 下げる
     TP_SPEED_RST,             // スクロール速度をリセット
     TP_TOGG_EN,               // トラックパッド有効/無効 トグル
-    TP_DRAG_LOCK
+    TP_DRAG_LOCK,
+    TP_INERTIA                // 慣性スクロール ON/OFF};
 };
 
 // EEPROM内の設定値保存場所を定義します（ユーザー領域の先頭からのオフセット）

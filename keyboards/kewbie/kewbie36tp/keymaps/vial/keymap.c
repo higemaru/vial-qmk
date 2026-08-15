@@ -42,6 +42,18 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 static int8_t  g_tp_multiplier = 1;   // +1 or -1
 static uint8_t g_tp_speed      = TP_SPEED_DEFAULT;
 static bool g_tp_enabled = true;
+static bool g_tp_inertia_enabled = true;   // 追加
+
+// --- 慣性スクロール設定 ---
+#define INERTIA_SCALE       256   // 固定小数点スケール
+#define INERTIA_DECAY       235   // 毎フレーム保持率 (235/256 ≒ 92%)。大きいほど長く滑る
+#define INERTIA_MIN_VEL     (8 * INERTIA_SCALE)  // これ未満で停止
+#define INERTIA_SMOOTH_NUM  3     // スムージング係数（大きいほど直近重視）
+#define INERTIA_BOOST       160   // 慣性開始時のブースト率(%) 狭いパッド対策で増幅
+
+static int32_t g_inertia_vel_h = 0; // 慣性用の速度（raw値 × INERTIA_SCALE）
+static int32_t g_inertia_vel_v = 0;
+
 
 void tp_cache_load(void) {
     uint8_t inv   = eeprom_read_byte((uint8_t*)(EECONFIG_USER + EEP_TP_INVERT));
@@ -119,6 +131,14 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 }
                 return false;
             }
+            case TP_INERTIA: {
+                g_tp_inertia_enabled = !g_tp_inertia_enabled;
+                if (!g_tp_inertia_enabled) {
+                    g_inertia_vel_h = 0;
+                    g_inertia_vel_v = 0;
+                }
+                return false;
+            }
         }
     }
     return true;
@@ -151,9 +171,32 @@ report_mouse_t pointing_device_task_user(report_mouse_t mouse_report) {
         return mouse_report;
     }
     int32_t div = speed_divisor[g_tp_speed];
+    bool has_input = (mouse_report.h != 0 || mouse_report.v != 0);
+    int32_t raw_h = 0, raw_v = 0;
 
-    scroll_amount_h += mouse_report.h * g_tp_multiplier;
-    scroll_amount_v += mouse_report.v * g_tp_multiplier;
+    if (has_input) {
+        raw_h = (int32_t)mouse_report.h * g_tp_multiplier;
+        raw_v = (int32_t)mouse_report.v * g_tp_multiplier;
+
+        // 慣性用速度をスムージングして更新
+        g_inertia_vel_h = (g_inertia_vel_h * (INERTIA_SMOOTH_NUM - 1) + raw_h * INERTIA_SCALE) / INERTIA_SMOOTH_NUM;
+        g_inertia_vel_v = (g_inertia_vel_v * (INERTIA_SMOOTH_NUM - 1) + raw_v * INERTIA_SCALE) / INERTIA_SMOOTH_NUM;
+
+    } else if (g_tp_inertia_enabled && (g_inertia_vel_h != 0 || g_inertia_vel_v != 0)) {
+        // 慣性フェーズ：保持速度をブーストして仮想入力として注入
+        raw_h = (g_inertia_vel_h * INERTIA_BOOST / 100) / INERTIA_SCALE;
+        raw_v = (g_inertia_vel_v * INERTIA_BOOST / 100) / INERTIA_SCALE;
+
+        g_inertia_vel_h = g_inertia_vel_h * INERTIA_DECAY / 256;
+        g_inertia_vel_v = g_inertia_vel_v * INERTIA_DECAY / 256;
+
+        if (abs(g_inertia_vel_h) < INERTIA_MIN_VEL) g_inertia_vel_h = 0;
+        if (abs(g_inertia_vel_v) < INERTIA_MIN_VEL) g_inertia_vel_v = 0;
+    }
+
+    // タッチ中・慣性中どちらも同じ蓄積→div変換ロジックを通す
+    scroll_amount_h += raw_h;
+    scroll_amount_v += raw_v;
 
     int8_t h = scroll_amount_h / div;
     int8_t v = scroll_amount_v / div;
@@ -162,5 +205,6 @@ report_mouse_t pointing_device_task_user(report_mouse_t mouse_report) {
 
     mouse_report.h = h;
     mouse_report.v = v;
+
     return mouse_report;
 }
