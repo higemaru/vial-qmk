@@ -35,24 +35,6 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 };
 
-
-//https://74th.hateblo.jp/entry/testing-TPS43-201A-S
-#define SCROLL_SCALE_PERCENT 3
-
-int32_t scroll_amount_h = 0;
-int32_t scroll_amount_v = 0;
-
-report_mouse_t pointing_device_task_user(report_mouse_t mouse_report) {
-//    scroll_amount_h += mouse_report.h * SCROLL_SCALE_PERCENT;
-//    scroll_amount_v += mouse_report.v * SCROLL_SCALE_PERCENT;
-    scroll_amount_h -= mouse_report.h * SCROLL_SCALE_PERCENT; // [adhoc] mac なのでスクロールの方向をひっくりかえす
-    scroll_amount_v -= mouse_report.v * SCROLL_SCALE_PERCENT;
-    int8_t h = scroll_amount_h / 100;
-    int8_t v = scroll_amount_v / 100;
-    scroll_amount_h -= h*100;
-    scroll_amount_v -= v*100;
-
-    mouse_report.h = h;
-    mouse_report.v = v;
-    return mouse_report;
-}
+/* スクロール処理は keyboards/kewbie36tp/kewbie36tp.c に統合した。
+ * ここに pointing_device_task_user を定義すると _kb の処理の後に
+ * 二重に適用されてしまうので置かないこと。 */
