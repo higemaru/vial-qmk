@@ -118,7 +118,7 @@ void eeconfig_init_kb(void) {
 bool process_record_kb(uint16_t keycode, keyrecord_t *record) {
     if (record->event.pressed) {  // キーが押された時だけ反応
         switch (keycode) {
-            case TP_TOGG_INV: {
+        	case TP_TOGG_INV: {
                 uint8_t inv = eeprom_read_byte((uint8_t *)(EECONFIG_USER + EEP_TP_INVERT));
                 inv         = !inv;
                 eeprom_update_byte((uint8_t *)(EECONFIG_USER + EEP_TP_INVERT), inv);
