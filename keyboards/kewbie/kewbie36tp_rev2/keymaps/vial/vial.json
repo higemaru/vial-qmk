@@ -338,6 +338,26 @@
       "name": "TP_DRAG_LOCK",
       "title": "Drag Lock",
       "shortName": "DrgLk"
+    },
+    {
+      "name": "TP_INERTIA",
+      "title": "Inertial Scroll ON/OFF",
+      "shortName": "Inertia"
+    },
+    {
+      "name": "TP_CUR_INC",
+      "title": "Cursor Speed +",
+      "shortName": "CurSpd+"
+    },
+    {
+      "name": "TP_CUR_DEC",
+      "title": "Cursor Speed -",
+      "shortName": "CurSpd-"
+    },
+    {
+      "name": "TP_CUR_RST",
+      "title": "Cursor Speed Reset",
+      "shortName": "CurRst"
     }
   ]
 }

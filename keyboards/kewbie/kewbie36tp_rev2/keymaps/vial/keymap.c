@@ -26,17 +26,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
             KC_TRNS, KC_TRNS, MO(3),  KC_TRNS, KC_TRNS, KC_BSPC
         ),
 
-
         [3] = LAYOUT(
             KC_F1, KC_F2,   KC_F3,   KC_F4,   KC_F5, KC_F6,  KC_F7,   KC_F8,   KC_F9,   KC_F10,
             KC_VOLD, KC_VOLU, KC_MUTE, KC_TRNS, KC_TRNS,    TP_TOGG_EN, KC_BTN1, KC_BTN2, TP_DRAG_LOCK , KC_F11,
-            KC_BRID, KC_BRIU, KC_NO,     KC_TRNS, KC_TRNS,  TP_TOGG_INV, TP_SPEED_DEC, TP_SPEED_RST, TP_SPEED_INC,  KC_F12,
+            KC_BRID, KC_BRIU, TP_CUR_DEC, TP_CUR_RST, TP_CUR_INC,  TP_TOGG_INV, TP_SPEED_DEC, TP_SPEED_RST, TP_SPEED_INC,  KC_F12,
             KC_TRNS, KC_TRNS, KC_TRNS,  KC_TRNS, KC_TRNS, KC_TRNS
         ),
-
 };
-
-/* トラックパッド関連の処理は keyboards/kewbie36tp/kewbie36tp.c に統合した。
- * ここに pointing_device_task_user 等を定義すると _kb の処理の後に
- * 二重適用されてしまうので置かないこと。
- * WS2812 は本番基板に未実装のため RGB_TOG は KC_NO にしてある。 */

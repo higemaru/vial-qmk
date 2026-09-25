@@ -20,6 +20,7 @@ static int8_t  g_tp_multiplier      = 1;   // +1 or -1
 static uint8_t g_tp_speed           = TP_SPEED_DEFAULT;
 static bool    g_tp_enabled         = true;
 static bool    g_tp_inertia_enabled = true;
+static uint8_t g_tp_cur             = TP_CUR_DEFAULT;
 
 /* ---- 慣性スクロール設定 ---- */
 #define INERTIA_SCALE       256   // 固定小数点スケール
@@ -55,6 +56,36 @@ static const uint8_t speed_divisor[11] = {
      10,  // 10: 最速
 };
 
+/* ---- カーソル速度 ----
+ * 倍率(%)。cur 1〜10、5 が等倍。
+ * 端数は cur_amount_* に繰り越すので、低倍率でもカクつかない。 */
+static const uint8_t cur_percent[11] = {
+    100,  // 0（未使用）
+     40,  // 1: 最遅
+     55,  // 2
+     70,  // 3
+     85,  // 4
+    100,  // 5: デフォルト（等倍）
+    125,  // 6
+    150,  // 7
+    180,  // 8
+    220,  // 9
+    255,  // 10: 最速
+};
+
+static int32_t cur_amount_x = 0;
+static int32_t cur_amount_y = 0;
+
+/* x/y レポートの範囲（QMK のバージョン差に左右されないよう自前で定義） */
+#ifdef MOUSE_EXTENDED_REPORT
+#    define TP_XY_MIN INT16_MIN
+#    define TP_XY_MAX INT16_MAX
+#else
+#    define TP_XY_MIN INT8_MIN
+#    define TP_XY_MAX INT8_MAX
+#endif
+#define TP_CLAMP_XY(v) ((v) < TP_XY_MIN ? TP_XY_MIN : ((v) > TP_XY_MAX ? TP_XY_MAX : (v)))
+
 /* ============================================================
  * 初期化 — TPS43 の RST 解除
  * ============================================================ */
@@ -78,10 +109,12 @@ void tp_cache_load(void) {
     uint8_t inv   = eeprom_read_byte((uint8_t *)(EECONFIG_USER + EEP_TP_INVERT));
     uint8_t speed = eeprom_read_byte((uint8_t *)(EECONFIG_USER + EEP_TP_SPEED));
     uint8_t en    = eeprom_read_byte((uint8_t *)(EECONFIG_USER + EEP_TP_EN));
+    uint8_t cur   = eeprom_read_byte((uint8_t *)(EECONFIG_USER + EEP_TP_CUR));
 
     g_tp_multiplier = (inv == 1) ? -1 : 1;
     g_tp_speed      = (speed == 0 || speed > 10) ? TP_SPEED_DEFAULT : speed;
     g_tp_enabled    = (en != 0xFF && en != 0x00) ? (en == 1) : true;  // 未初期化ならデフォルト ON
+    g_tp_cur        = (cur == 0 || cur > 10) ? TP_CUR_DEFAULT : cur;   // 既存個体の未初期化値もここで吸収
 }
 
 void keyboard_post_init_kb(void) {
@@ -107,6 +140,7 @@ void eeconfig_init_kb(void) {
     eeprom_update_byte((uint8_t *)(EECONFIG_USER + EEP_TP_INVERT), default_invert);
     eeprom_update_byte((uint8_t *)(EECONFIG_USER + EEP_TP_SPEED), TP_SPEED_DEFAULT);
     eeprom_update_byte((uint8_t *)(EECONFIG_USER + EEP_TP_EN), 1);  // デフォルトは有効
+    eeprom_update_byte((uint8_t *)(EECONFIG_USER + EEP_TP_CUR), TP_CUR_DEFAULT);
 
     eeconfig_init_user();
 }
@@ -167,6 +201,25 @@ bool process_record_kb(uint16_t keycode, keyrecord_t *record) {
                 }
                 return false;
             }
+            case TP_CUR_INC: {
+                if (g_tp_cur < 10) {
+                    g_tp_cur++;
+                    eeprom_update_byte((uint8_t *)(EECONFIG_USER + EEP_TP_CUR), g_tp_cur);
+                }
+                return false;
+            }
+            case TP_CUR_DEC: {
+                if (g_tp_cur > 1) {
+                    g_tp_cur--;
+                    eeprom_update_byte((uint8_t *)(EECONFIG_USER + EEP_TP_CUR), g_tp_cur);
+                }
+                return false;
+            }
+            case TP_CUR_RST: {
+                g_tp_cur = TP_CUR_DEFAULT;
+                eeprom_update_byte((uint8_t *)(EECONFIG_USER + EEP_TP_CUR), TP_CUR_DEFAULT);
+                return false;
+            }
         }
     }
 
@@ -181,6 +234,23 @@ report_mouse_t pointing_device_task_kb(report_mouse_t mouse_report) {
     if (!g_tp_enabled) {
         memset(&mouse_report, 0, sizeof(mouse_report));
         return pointing_device_task_user(mouse_report);
+    }
+
+    // カーソル速度（端数を繰り越して低速でも滑らかに）
+    {
+        int32_t pct = cur_percent[g_tp_cur];
+        cur_amount_x += (int32_t)mouse_report.x * pct;
+        cur_amount_y += (int32_t)mouse_report.y * pct;
+
+        // 高倍率時にレポート型の範囲を超えないようクランプ
+        int32_t x = TP_CLAMP_XY(cur_amount_x / 100);
+        int32_t y = TP_CLAMP_XY(cur_amount_y / 100);
+
+        cur_amount_x -= x * 100;
+        cur_amount_y -= y * 100;
+
+        mouse_report.x = x;
+        mouse_report.y = y;
     }
 
     int32_t div       = speed_divisor[g_tp_speed];
