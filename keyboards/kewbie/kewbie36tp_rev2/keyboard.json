@@ -1,12 +1,12 @@
 {
     "manufacturer": "KAWABATA, Kazumichi",
-    "keyboard_name": "Kewbie36tp",
+    "keyboard_name": "Kewbie36tp-rev2",
     "maintainer": "higemaru",
     "processor": "RP2040",
     "bootloader": "rp2040",
     "usb": {
         "vid": "0x6B65",
-        "pid": "0x0006",
+        "pid": "0x0007",
         "device_version": "1.0.0"
     },
     "features": {
