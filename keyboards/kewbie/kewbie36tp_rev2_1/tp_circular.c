@@ -44,14 +44,16 @@ static void to_centered_001mm(uint16_t abs_x, uint16_t abs_y, float *dx, float *
     *dy     = y - (PAD_H_001MM / 2.0f + TP_CIRC_CENTER_OFFSET_Y_01MM * 10.0f);
 }
 
-bool tp_circ_update(uint8_t fingers, uint16_t abs_x, uint16_t abs_y, int16_t *scroll) {
+bool tp_circ_update(uint8_t fingers, uint16_t abs_x, uint16_t abs_y, bool engage, int16_t *scroll) {
     *scroll = 0;
 
+#ifdef TP_CIRC_AUTO_RING
     const bool touch_down = (g_prev_fingers == 0 && fingers == 1);
-    g_prev_fingers        = fingers;
+#endif
+    g_prev_fingers = fingers;
 
-    if (fingers != 1) {
-        // 指を離した、または本数が変わった → 終了
+    if (fingers == 0) {
+        // 指を全部離した → 終了
         g_active      = false;
         g_angle_valid = false;
         g_remainder   = 0.0f;
@@ -62,15 +64,26 @@ bool tp_circ_update(uint8_t fingers, uint16_t abs_x, uint16_t abs_y, int16_t *sc
     to_centered_001mm(abs_x, abs_y, &dx, &dy);
     const float r = sqrtf(dx * dx + dy * dy);
 
-    if (touch_down) {
-        // 触り始めた場所だけで判定する
-        g_active      = (r >= RING_001MM);
+    if (!g_active) {
+        // キーが押されていれば、1 本指ならどこからでも開始
+        bool start = (engage && fingers == 1);
+#ifdef TP_CIRC_AUTO_RING
+        // 外周で触り始めたときも開始
+        if (touch_down && r >= RING_001MM) start = true;
+#endif
+        if (!start) {
+            return false;
+        }
+        // 一度始まったら、指を全部離すまで続ける（キーを離しても続く）
+        g_active      = true;
         g_angle_valid = false;
         g_remainder   = 0.0f;
     }
 
-    if (!g_active) {
-        return false;
+    if (fingers != 1) {
+        // 途中で 2 本以上触れたら一時停止。1 本に戻ったら続きから
+        g_angle_valid = false;
+        return true;
     }
 
     if (r < DEADZONE_001MM) {
@@ -92,7 +105,7 @@ bool tp_circ_update(uint8_t fingers, uint16_t abs_x, uint16_t abs_y, int16_t *sc
     if (d < -(float)M_PI) d += 2.0f * (float)M_PI;
     g_prev_angle = angle;
 
-    // 弧の長さ（0.01mm）→ X 解像度の単位。2本指スクロールと同じ単位にそろえる
+    // 弧の長さ（0.01mm）→ X 解像度の単位。チップの 2 本指スクロールと同じ単位にそろえる
     const float arc = d * r * g_res_x / PAD_W_001MM + g_remainder;
     int32_t     out = (int32_t)arc;
     if (out > INT16_MAX) out = INT16_MAX;

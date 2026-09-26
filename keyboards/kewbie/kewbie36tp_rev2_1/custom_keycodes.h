@@ -13,8 +13,15 @@ enum custom_keycodes {
     TP_INERTIA,             // 慣性スクロール ON/OFF
     TP_CUR_INC,             // カーソル速度を 1 上げる
     TP_CUR_DEC,             // カーソル速度を 1 下げる
-    TP_CUR_RST              // カーソル速度をリセット
+    TP_CUR_RST,             // カーソル速度をリセット
+    TP_CIRC                 // 円周スクロール（押している間／タッチパッドの仮想キーに置く）
 };
+
+// タッチパッドの「仮想キー」のマトリクス位置。
+// 実際のスイッチはない空き位置。Vial ではタッチパッドのキーとして表示され、
+// レイヤーごとに TP_CIRC を置くと、そのレイヤーが有効な間は円周スクロールになる。
+#define TP_VKEY_ROW 7
+#define TP_VKEY_COL 9
 
 // EEPROM内の設定値の位置（EECONFIG の kb 領域 4 バイト内のバイト位置）
 #define EEP_TP_INVERT 0  // 0番地: スクロール方向 (0 or 1)

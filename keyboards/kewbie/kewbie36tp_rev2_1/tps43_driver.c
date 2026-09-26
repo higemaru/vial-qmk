@@ -120,6 +120,12 @@
 #    define AZOTEQ_IQS5XX_ZOOM_CONSECUTIVE_DISTANCE 0x19
 #endif
 
+/* ---- 円周スクロールを始めてよいか ----
+ * キーボード側（kewbie36tp.c）で上書きする。既定は常に false。 */
+__attribute__((weak)) bool tp_circ_engaged(void) {
+    return false;
+}
+
 /* ---- 円周スクロールの向き（時計回りで下スクロールなら 0） ---- */
 #ifndef TP_CIRC_INVERT
 #    define TP_CIRC_INVERT 0
@@ -149,6 +155,7 @@
 #define G1_ZOOM (1 << 2)
 
 static bool     g_ready           = false;
+static bool     g_multi_seen      = false; // このタッチ中に 2 本以上触れたか
 static bool     g_need_resolution = true;
 static uint16_t g_res_x           = PAD_MAX_RES_X;
 
@@ -339,8 +346,13 @@ report_mouse_t pointing_device_driver_get_report(report_mouse_t mouse_report) {
     const uint8_t  fingers = d[5];
     const int16_t  rel_x   = (int16_t)BE16(&d[6]);
     const int16_t  rel_y   = (int16_t)BE16(&d[8]);
-    const uint16_t abs_x   = BE16(&d[10]);
+    const uint16_t abs_x   = BE16(&d[10]); // 1本目
     const uint16_t abs_y   = BE16(&d[12]);
+
+    // 2本以上触れたら、全部離すまで 1 本指のカーソル移動を止める。
+    // 2本指タップのあと、1本だけ残った指でカーソルが飛ぶのを防ぐ。
+    if (fingers >= 2) g_multi_seen = true;
+    if (fingers == 0) g_multi_seen = false;
 
 #ifdef TP_CIRC_DEBUG
     if (fingers > 0) {
@@ -378,8 +390,10 @@ report_mouse_t pointing_device_driver_get_report(report_mouse_t mouse_report) {
     }
 
     /* ---- 円周スクロール ---- */
-    int16_t circ = 0;
-    if (tp_circ_update(fingers, abs_x, abs_y, &circ)) {
+    // 指が触れているときだけ、開始してよいか（キー状態）を問い合わせる
+    const bool engage = (fingers > 0) && tp_circ_engaged();
+    int16_t    circ   = 0;
+    if (tp_circ_update(fingers, abs_x, abs_y, engage, &circ)) {
         // 円周スクロール中はカーソルを動かさない。
         // 時計回り = 下スクロール（HID の v は正が上）
         int32_t v = TP_CIRC_INVERT ? circ : -circ;
@@ -389,7 +403,7 @@ report_mouse_t pointing_device_driver_get_report(report_mouse_t mouse_report) {
     }
 
     /* ---- 1本指のカーソル移動 ---- */
-    if (fingers == 1 && !ignore_movement) {
+    if (fingers == 1 && !g_multi_seen && !ignore_movement) {
         r.x = CLAMP_XY(rel_x);
         r.y = CLAMP_XY(rel_y);
     }

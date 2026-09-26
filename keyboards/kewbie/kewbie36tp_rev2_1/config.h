@@ -32,10 +32,8 @@
  * https://docs.qmk.fm/features/pointing_device
  * 搭載チップは実機検証で IQS572（Product Number 58）と確定済み。 */
 #define AZOTEQ_IQS5XX_TPS43 1
-/*#define AZOTEQ_IQS5XX_SCROLL_INITIAL_DISTANCE 30    // default 50
-#define AZOTEQ_IQS5XX_TWO_FINGER_TAP_ENABLE false   // 2本指タップ（右クリック）無効化*/
-#define AZOTEQ_IQS5XX_SCROLL_ENABLE false        // 2本指スクロール無効（円周スクロールに任せる）
-#define AZOTEQ_IQS5XX_TWO_FINGER_TAP_ENABLE true // 2本指タップ＝右クリック
+#define AZOTEQ_IQS5XX_SCROLL_ENABLE false           // 2本指スクロールは円周スクロールに任せる
+#define AZOTEQ_IQS5XX_TWO_FINGER_TAP_ENABLE true    // 2本指タップ＝右クリック
 /* #define AZOTEQ_IQS5XX_ROTATION_180 */
 /* #define AZOTEQ_IQS5XX_SWIPE_X_ENABLE true */
 
@@ -44,8 +42,8 @@
 #define POINTING_DEVICE_TASK_THROTTLE_MS 11
 
 /* ---- 円周スクロール（tp_circular.h に既定値と説明あり） ---- */
-#define TP_CIRC_DIAMETER_MM 38      // カバーの円形切り抜きの直径
-#define TP_CIRC_RING_PCT    70      // 半径の 70% より外で触り始めたら円周スクロール
+#define TP_CIRC_DIAMETER_MM 38      // 回転の基準円の直径（中心付近の無視範囲の基準）
+/* #define TP_CIRC_AUTO_RING */     // キーなしでも、外周から触り始めたら円周スクロール
 /* #define TP_CIRC_INVERT 1 */      // 回転方向を逆にする
 /* #define TP_CIRC_DEBUG */         // 座標をコンソールに出す（CONSOLE_ENABLE = yes が必要）
 

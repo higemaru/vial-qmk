@@ -14,6 +14,7 @@
 #include <string.h>
 
 #include "custom_keycodes.h"
+#include "tp_circular.h"
 
 /* ---- グローバルキャッシュ ---- */
 static int8_t  g_tp_multiplier      = 1;   // +1 or -1
@@ -169,7 +170,36 @@ void eeconfig_init_kb(void) {
  * カスタムキーコード
  * ============================================================ */
 
+/* ============================================================
+ * 円周スクロールの切り替え
+ *
+ * 次のどちらかのとき、タッチパッドの 1 本指が円周スクロールになる。
+ *   1. TP_CIRC を置いた実キーを押している
+ *   2. 今有効なレイヤーで、タッチパッドの仮想キー（TP_VKEY_ROW/COL）に
+ *      TP_CIRC が置かれている（KC_TRNS なら下のレイヤーを見る）
+ *
+ * 2 は Vial でタッチパッドのキーにレイヤーごとに割り当てる想定。
+ * たとえばレイヤー 1 に TP_CIRC を置けば、LT(1, …) を押している間だけ
+ * 円周スクロールになる。一度始まれば、キーを離しても指を離すまで続く。
+ * ============================================================ */
+
+static bool g_circ_key_held = false;
+
+bool tp_circ_engaged(void) {
+    if (g_circ_key_held) {
+        return true;
+    }
+    const keypos_t pos   = {.row = TP_VKEY_ROW, .col = TP_VKEY_COL};
+    const uint8_t  layer = layer_switch_get_layer(pos);
+    return keymap_key_to_keycode(layer, pos) == TP_CIRC;
+}
+
 bool process_record_kb(uint16_t keycode, keyrecord_t *record) {
+    if (keycode == TP_CIRC) {
+        g_circ_key_held = record->event.pressed;
+        return false;
+    }
+
     if (record->event.pressed) {  // キーが押された時だけ反応
         switch (keycode) {
         	case TP_TOGG_INV: {
