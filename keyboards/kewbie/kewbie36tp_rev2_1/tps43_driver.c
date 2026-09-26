@@ -422,7 +422,7 @@ report_mouse_t pointing_device_driver_get_report(report_mouse_t mouse_report) {
      * 2 本指スクロールと同じ（スクロール向き切り替え・速度設定がそのまま効く）。 */
     if (g_drag) {
         if (fingers == 1) {
-            r.h = CLAMP_WHEEL(rel_x);
+            r.h = CLAMP_WHEEL(-rel_x);
             r.v = CLAMP_WHEEL(rel_y);
         }
         return r;
