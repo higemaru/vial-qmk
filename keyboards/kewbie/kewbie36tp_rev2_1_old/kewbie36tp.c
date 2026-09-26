@@ -171,48 +171,33 @@ void eeconfig_init_kb(void) {
  * ============================================================ */
 
 /* ============================================================
- * タッチパッドのモード切り替え
+ * 円周スクロールの切り替え
  *
- * モードを決めるキーコードは TP_CIRC / TP_DRAG / TP_RING の 3 つ。
- *   1. 実キーに置いた場合：押している間そのモード（後から押したものが優先）
- *   2. タッチパッドの仮想キー（TP_VKEY_ROW/COL）に置いた場合：
- *      そのレイヤーが有効な間そのモード（KC_TRNS なら下のレイヤーを見る）
- * 1 が 2 より優先。どのモードも、一度始まれば指を離すまで続く。
+ * 次のどちらかのとき、タッチパッドの 1 本指が円周スクロールになる。
+ *   1. TP_CIRC を置いた実キーを押している
+ *   2. 今有効なレイヤーで、タッチパッドの仮想キー（TP_VKEY_ROW/COL）に
+ *      TP_CIRC が置かれている（KC_TRNS なら下のレイヤーを見る）
  *
- * 初期キーマップ（vial）では、レイヤー 1 に TP_CIRC、レイヤー 2 に TP_DRAG。
+ * 2 は Vial でタッチパッドのキーにレイヤーごとに割り当てる想定。
+ * たとえばレイヤー 1 に TP_CIRC を置けば、LT(1, …) を押している間だけ
+ * 円周スクロールになる。一度始まれば、キーを離しても指を離すまで続く。
  * ============================================================ */
 
-static uint16_t g_mode_key_held = KC_NO; // 押している実キーのモード
+static bool g_circ_key_held = false;
 
-static uint8_t mode_from_keycode(uint16_t kc) {
-    switch (kc) {
-        case TP_CIRC: return TP_MODE_CIRC;
-        case TP_DRAG: return TP_MODE_DRAG;
-        case TP_RING: return TP_MODE_RING;
-        default:      return TP_MODE_CURSOR;
-    }
-}
-
-uint8_t tp_requested_mode(void) {
-    if (g_mode_key_held != KC_NO) {
-        return mode_from_keycode(g_mode_key_held);
+bool tp_circ_engaged(void) {
+    if (g_circ_key_held) {
+        return true;
     }
     const keypos_t pos   = {.row = TP_VKEY_ROW, .col = TP_VKEY_COL};
     const uint8_t  layer = layer_switch_get_layer(pos);
-    return mode_from_keycode(keymap_key_to_keycode(layer, pos));
+    return keymap_key_to_keycode(layer, pos) == TP_CIRC;
 }
 
 bool process_record_kb(uint16_t keycode, keyrecord_t *record) {
-    switch (keycode) {
-        case TP_CIRC:
-        case TP_DRAG:
-        case TP_RING:
-            if (record->event.pressed) {
-                g_mode_key_held = keycode;
-            } else if (g_mode_key_held == keycode) {
-                g_mode_key_held = KC_NO;
-            }
-            return false;
+    if (keycode == TP_CIRC) {
+        g_circ_key_held = record->event.pressed;
+        return false;
     }
 
     if (record->event.pressed) {  // キーが押された時だけ反応

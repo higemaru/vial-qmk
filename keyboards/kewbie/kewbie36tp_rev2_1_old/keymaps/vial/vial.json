@@ -373,18 +373,8 @@
     },
     {
       "name": "TP_CIRC",
-      "title": "Touchpad: Circular Scroll",
+      "title": "Touchpad Circular Scroll",
       "shortName": "TpCirc"
-    },
-    {
-      "name": "TP_DRAG",
-      "title": "Touchpad: Drag Scroll",
-      "shortName": "TpDrag"
-    },
-    {
-      "name": "TP_RING",
-      "title": "Touchpad: Circular Scroll from Rim",
-      "shortName": "TpRing"
     }
   ]
 }

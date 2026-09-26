@@ -44,11 +44,13 @@ static void to_centered_001mm(uint16_t abs_x, uint16_t abs_y, float *dx, float *
     *dy     = y - (PAD_H_001MM / 2.0f + TP_CIRC_CENTER_OFFSET_Y_01MM * 10.0f);
 }
 
-bool tp_circ_update(uint8_t fingers, uint16_t abs_x, uint16_t abs_y, uint8_t start_mode, int16_t *scroll) {
+bool tp_circ_update(uint8_t fingers, uint16_t abs_x, uint16_t abs_y, bool engage, int16_t *scroll) {
     *scroll = 0;
 
+#ifdef TP_CIRC_AUTO_RING
     const bool touch_down = (g_prev_fingers == 0 && fingers == 1);
-    g_prev_fingers        = fingers;
+#endif
+    g_prev_fingers = fingers;
 
     if (fingers == 0) {
         // 指を全部離した → 終了
@@ -63,14 +65,12 @@ bool tp_circ_update(uint8_t fingers, uint16_t abs_x, uint16_t abs_y, uint8_t sta
     const float r = sqrtf(dx * dx + dy * dy);
 
     if (!g_active) {
-        bool start = false;
-        if (start_mode == TP_CIRC_START_ANY) {
-            // 1 本指ならどこからでも開始
-            start = (fingers == 1);
-        } else if (start_mode == TP_CIRC_START_RING) {
-            // 外周で触り始めた瞬間だけ開始
-            start = (touch_down && r >= RING_001MM);
-        }
+        // キーが押されていれば、1 本指ならどこからでも開始
+        bool start = (engage && fingers == 1);
+#ifdef TP_CIRC_AUTO_RING
+        // 外周で触り始めたときも開始
+        if (touch_down && r >= RING_001MM) start = true;
+#endif
         if (!start) {
             return false;
         }

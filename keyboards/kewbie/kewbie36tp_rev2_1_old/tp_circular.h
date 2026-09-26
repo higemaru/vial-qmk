@@ -8,12 +8,12 @@
  * 1 本指の絶対座標から、パッド中心の周りを回った量（弧の長さ）を
  * スクロール量として返す。
  *
- * 開始のきっかけは呼び出し側が start で指定する。
- *   TP_CIRC_START_ANY  : 指が 1 本触れていれば、どこからでも開始
- *   TP_CIRC_START_RING : 外周で触り始めた瞬間（0 本 → 1 本）だけ開始
- *   TP_CIRC_START_NONE : 開始しない
+ * 開始のきっかけは 2 つ。
+ *   1. engage（呼び出し側が決める。キーを押している間など）が true のとき、
+ *      指が 1 本触れていれば、どこからでも開始
+ *   2. TP_CIRC_AUTO_RING を定義した場合は、外周で触り始めたときも開始
  *
- * 一度始まったら、指を全部離すまで続く（start が変わっても続く）。
+ * 一度始まったら、指を全部離すまで続く（engage が false に戻っても続く）。
  *
  * QMK に依存しないので、ホストの gcc で単体テストできる。
  * ============================================================ */
@@ -43,8 +43,10 @@
 #    define TP_CIRC_CENTER_OFFSET_Y_01MM 0
 #endif
 
-/* ---- 外周リングの幅（TP_CIRC_START_RING のとき） ----
- * 半径の何 % より外で触り始めたら開始するか。70 なら外側 30% がリング。 */
+/* ---- 外周から触り始めたら自動で開始（任意） ----
+ * 定義すると、キーを押していなくても、半径の TP_CIRC_RING_PCT % より外で
+ * 触り始めたら円周スクロールになる。 */
+/* #define TP_CIRC_AUTO_RING */
 #ifndef TP_CIRC_RING_PCT
 #    define TP_CIRC_RING_PCT 70
 #endif
@@ -58,35 +60,17 @@
 /* 解像度（絶対座標の最大値）を設定する。CPI が変わったら呼び直す。 */
 void tp_circ_set_resolution(uint16_t res_x, uint16_t res_y);
 
-enum {
-    TP_CIRC_START_NONE = 0,
-    TP_CIRC_START_RING,
-    TP_CIRC_START_ANY,
-};
-
-/* 毎フレーム呼ぶ（指が触れていないフレームも含めて）。
+/* 毎フレーム呼ぶ。
  *   fingers : 指の本数
  *   abs_x/y : 1 本目の指の絶対座標
- *   start   : 開始のきっかけ（TP_CIRC_START_*）
+ *   engage  : 円周スクロールを始めてよいか（キーを押している間など）
  *   scroll  : 出力。弧の長さ（パッドの X 解像度と同じ単位）。時計回りが正
  * 戻り値   : 円周スクロール中なら true（呼び出し側はカーソル移動を止める） */
-bool tp_circ_update(uint8_t fingers, uint16_t abs_x, uint16_t abs_y, uint8_t start, int16_t *scroll);
+bool tp_circ_update(uint8_t fingers, uint16_t abs_x, uint16_t abs_y, bool engage, int16_t *scroll);
 
-/* ============================================================
- * タッチパッドのモード
- *
- * キーボード側（kewbie36tp.c）が「今どのモードを要求しているか」を返す。
- * ドライバが指の触れているフレームごとに呼ぶ。
- * ============================================================ */
-enum {
-    TP_MODE_CURSOR = 0, // 通常（カーソル移動）
-    TP_MODE_RING,       // 外周から触り始めたら円周スクロール
-    TP_MODE_CIRC,       // どこからでも円周スクロール
-    TP_MODE_DRAG,       // 動かした方向に縦横スクロール
-};
-
-/* 定義しなければ常に TP_MODE_CURSOR */
-uint8_t tp_requested_mode(void);
+/* 円周スクロールを始めてよいか。キーボード側で実装する（ドライバが毎フレーム呼ぶ）。
+ * 定義しなければ常に false（TP_CIRC_AUTO_RING だけで動く）。 */
+bool tp_circ_engaged(void);
 
 /* 円周スクロール中かどうか */
 bool tp_circ_is_active(void);

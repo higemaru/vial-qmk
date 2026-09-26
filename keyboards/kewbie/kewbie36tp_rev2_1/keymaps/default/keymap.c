@@ -1,2 +1,4 @@
-// keymaps/default/keymap.c
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+
+/* vial キーマップと同じものを使う */
 #include "../vial/keymap.c"

@@ -120,10 +120,10 @@
 #    define AZOTEQ_IQS5XX_ZOOM_CONSECUTIVE_DISTANCE 0x19
 #endif
 
-/* ---- 要求されているモード ----
- * キーボード側（kewbie36tp.c）で上書きする。既定は常にカーソル。 */
-__attribute__((weak)) uint8_t tp_requested_mode(void) {
-    return TP_MODE_CURSOR;
+/* ---- 円周スクロールを始めてよいか ----
+ * キーボード側（kewbie36tp.c）で上書きする。既定は常に false。 */
+__attribute__((weak)) bool tp_circ_engaged(void) {
+    return false;
 }
 
 /* ---- 円周スクロールの向き（時計回りで下スクロールなら 0） ---- */
@@ -156,7 +156,6 @@ __attribute__((weak)) uint8_t tp_requested_mode(void) {
 
 static bool     g_ready           = false;
 static bool     g_multi_seen      = false; // このタッチ中に 2 本以上触れたか
-static bool     g_drag            = false; // このタッチ中は縦横スクロール
 static bool     g_need_resolution = true;
 static uint16_t g_res_x           = PAD_MAX_RES_X;
 
@@ -390,41 +389,16 @@ report_mouse_t pointing_device_driver_get_report(report_mouse_t mouse_report) {
         r.v = CLAMP_WHEEL(rel_y);
     }
 
-    /* ---- モード ----
-     * どのモードも、一度始まったら指を全部離すまで続く（キーを離しても続く）。 */
-    if (fingers == 0) g_drag = false;
-    const uint8_t mode = (fingers > 0) ? tp_requested_mode() : TP_MODE_CURSOR;
-
-    // 縦横スクロールの開始（円周スクロール中でなければ）
-    if (!g_drag && !tp_circ_is_active() && mode == TP_MODE_DRAG && fingers == 1) {
-        g_drag = true;
-    }
-
-    /* ---- 円周スクロール ----
-     * 指の本数の履歴を追うため、毎フレーム呼ぶ（縦横スクロール中も）。 */
-    uint8_t start = TP_CIRC_START_NONE;
-    if (!g_drag) {
-        if (mode == TP_MODE_CIRC) start = TP_CIRC_START_ANY;
-        if (mode == TP_MODE_RING) start = TP_CIRC_START_RING;
-    }
-    int16_t circ = 0;
-    if (tp_circ_update(fingers, abs_x, abs_y, start, &circ)) {
+    /* ---- 円周スクロール ---- */
+    // 指が触れているときだけ、開始してよいか（キー状態）を問い合わせる
+    const bool engage = (fingers > 0) && tp_circ_engaged();
+    int16_t    circ   = 0;
+    if (tp_circ_update(fingers, abs_x, abs_y, engage, &circ)) {
         // 円周スクロール中はカーソルを動かさない。
         // 時計回り = 下スクロール（HID の v は正が上）
         int32_t v = TP_CIRC_INVERT ? circ : -circ;
         r.v       = CLAMP_WHEEL(v);
         r.h       = 0;
-        return r;
-    }
-
-    /* ---- 縦横スクロール ----
-     * 1 本指の移動量をそのままスクロールにする。向きと単位は、チップの
-     * 2 本指スクロールと同じ（スクロール向き切り替え・速度設定がそのまま効く）。 */
-    if (g_drag) {
-        if (fingers == 1) {
-            r.h = CLAMP_WHEEL(rel_x);
-            r.v = CLAMP_WHEEL(rel_y);
-        }
         return r;
     }
 

@@ -43,7 +43,7 @@
 
 /* ---- 円周スクロール（tp_circular.h に既定値と説明あり） ---- */
 #define TP_CIRC_DIAMETER_MM 38      // 回転の基準円の直径（中心付近の無視範囲の基準）
-#define TP_CIRC_RING_PCT    70      // TP_RING のとき、半径の 70% より外で触り始めたら円周スクロール
+/* #define TP_CIRC_AUTO_RING */     // キーなしでも、外周から触り始めたら円周スクロール
 /* #define TP_CIRC_INVERT 1 */      // 回転方向を逆にする
 /* #define TP_CIRC_DEBUG */         // 座標をコンソールに出す（CONSOLE_ENABLE = yes が必要）
 

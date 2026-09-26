@@ -26,7 +26,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
             KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,  KC_LEFT, KC_DOWN, KC_UP,   KC_RIGHT, KC_PIPE,
             KC_TRNS, KC_EQL,  KC_PLUS, KC_UNDS, KC_TILD,  KC_QUOT, KC_PIPE, KC_LCBR, KC_RCBR,  KC_BSLS,
             KC_TRNS, KC_TRNS, MO(3),  KC_TRNS, KC_TRNS, KC_BSPC,
-            TP_DRAG  // タッチパッド（仮想キー）
+            TP_CIRC  // タッチパッド（仮想キー）
         ),
 
         [3] = LAYOUT(
@@ -34,6 +34,6 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
             KC_VOLD, KC_VOLU, KC_MUTE, KC_TRNS, KC_TRNS,    TP_TOGG_EN, KC_BTN1, KC_BTN2, TP_DRAG_LOCK , KC_F11,
             KC_BRID, KC_BRIU, TP_CUR_DEC, TP_CUR_RST, TP_CUR_INC,  TP_TOGG_INV, TP_SPEED_DEC, TP_SPEED_RST, TP_SPEED_INC,  KC_F12,
             KC_TRNS, KC_TRNS, KC_TRNS,  KC_TRNS, KC_TRNS, KC_TRNS,
-            TP_DRAG  // タッチパッド（仮想キー）
+            TP_CIRC  // タッチパッド（仮想キー）
         ),
 };
